@@ -28,12 +28,15 @@ public class SecKill_redisByScript {
 		Jedis jedis = jedispool.getResource();
 		System.out.println(jedis.ping());
 
-		Set<HostAndPort> set = new HashSet<HostAndPort>();
+		//Set<HostAndPort> set = new HashSet<HostAndPort>();
 
 		// doSecKill("201","sk:0101");
+		
+		jedis.close();
 
 	}
 
+	//lua脚本拼接成字符串 ，可以查看seckill.lua 文件
 	static String secKillScript ="local userid=KEYS[1];\r\n" + 
 			"local prodid=KEYS[2];\r\n" + 
 			"local qtkey='sk:'..prodid..\":qt\";\r\n" + 
@@ -50,7 +53,8 @@ public class SecKill_redisByScript {
 			"   redis.call(\"sadd\",usersKey,userid);\r\n" + 
 			"end\r\n" + 
 			"return 1" ;
-			 
+			
+	//lua脚本拼接成字符串
 	static String secKillScript2 = 
 			"local userExists=redis.call(\"sismember\",\"{sk}:0101:usr\",userid);\r\n" +
 			" return 1";
@@ -67,8 +71,9 @@ public class SecKill_redisByScript {
 		Object result = jedis.evalsha(sha1, 2, uid, prodid);
 
 		String reString = String.valueOf(result);
+		
 		if ("0".equals(reString)) {
-			System.err.println("已抢空！�?");
+			System.err.println("已抢空!!");
 		} else if ("1".equals(reString)) {
 			System.out.println("抢购成功！！！！");
 		} else if ("2".equals(reString)) {

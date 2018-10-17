@@ -31,12 +31,15 @@ public class SecKillServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		// TODO Auto-generated method stub
 
 		String userid = new Random().nextInt(50000) + "";
 
 		String prodid = request.getParameter("prodid");
 
+		//boolean if_success = SecKill_redis.doSecKill(userid, prodid);
+		//使用Lua 
 		boolean if_success = SecKill_redisByScript.doSecKill(userid, prodid);
 
 		response.getWriter().print(if_success);

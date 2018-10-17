@@ -52,26 +52,31 @@ public class SecKill_redis {
 		jedis.watch(qtKey);
 
 		// 判断库存是否为空
-		String qt = jedis.get(qtKey);
+		String qt = jedis.get(qtKey); 
 		int num = Integer.parseInt(qt);
 		if (num <= 0) {
 			// System.err.println( uid +"已抢空！！！");
 			jedis.close();
 			return false;
 		}
+		
 		Transaction transaction = jedis.multi();
-		// 减库�?
-
+		
+		// 减库
 		transaction.decr(qtKey);
+		
 		// 加人
 		transaction.sadd(userKey, uid);
 
 		List<Object> list = transaction.exec();
+		
 		if (list == null || list.size() == 0) {
-			// System.err.println( uid +"抢购失败！！�?");
+			// System.err.println( uid +"抢购失败！！");
 		} else {
-			// System.out.println( uid +"抢购成功！！�?");
+			// System.out.println( uid +"抢购成功！！");
 		}
+		
+		// 打印连接池， 连接激活   等待连接
 		System.out.println("active:" + jedisPool.getNumActive() + "|wait:" + jedisPool.getNumWaiters());
 
 		jedis.close();
